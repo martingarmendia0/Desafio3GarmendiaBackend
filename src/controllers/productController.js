@@ -30,6 +30,10 @@ exports.getProductById = async (req, res) => {
 exports.addProduct = async (req, res) => {
     try {
         const newProduct = await productManager.addProduct(req.body);
+        const io = req.app.get('io');
+        const updatedProducts = await productManager.getProducts(); // Actualiza la lista de productos
+        io.emit('productUpdated', updatedProducts);
+
         res.json(newProduct);
     } catch (error) {
         res.status(400).json({ error: error.message });
@@ -40,6 +44,10 @@ exports.updateProduct = async (req, res) => {
     try {
         const { pid } = req.params;
         const updatedProduct = await productManager.updateProduct(parseInt(pid), req.body);
+        const io = req.app.get('io');
+        const updatedProducts = await productManager.getProducts(); // Actualiza la lista de productos
+        io.emit('productUpdated', updatedProducts);
+
         res.json(updatedProduct);
     } catch (error) {
         res.status(404).json({ error: error.message });
@@ -50,6 +58,10 @@ exports.deleteProduct = async (req, res) => {
     try {
         const { pid } = req.params;
         await productManager.deleteProduct(parseInt(pid));
+        const io = req.app.get('io');
+        const updatedProducts = await productManager.getProducts(); // Actualiza la lista de productos
+        io.emit('productUpdated', updatedProducts);
+
         res.json({ message: 'Product deleted successfully' });
     } catch (error) {
         res.status(404).json({ error: error.message });

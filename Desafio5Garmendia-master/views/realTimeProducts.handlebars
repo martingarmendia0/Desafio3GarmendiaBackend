@@ -1,0 +1,47 @@
+<script>
+  const form = document.getElementById('productForm');
+  const socket = io();
+  const productList = document.getElementById('productList');
+
+  function updateProductList(data) {
+    productList.innerHTML = '';
+
+    const products = data.products;
+
+    if (Array.isArray(products)) {
+      products.forEach(product => {
+        const li = document.createElement('li');
+        li.innerHTML = `<strong>${product.title}</strong>
+                         <p>${product.description}</p>
+                         <p>Price: $${product.price}</p>
+                         <p>Stock: ${product.stock}</p>`;
+        productList.appendChild(li);
+      });
+    } else {
+      console.error('El formato de los productos no es un array:', products);
+    }
+  }
+
+  form.addEventListener('submit', (event) => {
+    event.preventDefault();
+
+    const title = document.getElementsByName('title')[0].value;
+    const description = document.getElementsByName('description')[0].value;
+    const price = document.getElementsByName('price')[0].value;
+    const stock = document.getElementsByName('stock')[0].value;
+
+    socket.emit('addProduct', { title, description, price, stock });
+  });
+
+  socket.on('initialProducts', (initialProducts) => {
+    updateProductList(initialProducts);
+  });
+
+  socket.on('productUpdated', (data) => {
+    updateProductList(data);
+  });
+
+  socket.on('addError', (errorMessage) => {
+    console.error('Error:', errorMessage);
+  });
+</script>

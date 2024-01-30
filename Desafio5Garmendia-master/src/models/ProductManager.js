@@ -1,3 +1,4 @@
+// src/models/ProductManager.js
 const fs = require('fs').promises;
 
 class ProductManager {
@@ -46,12 +47,15 @@ class ProductManager {
   }
 
   async deleteProduct(id) {
-
     let products = await this.readProductsFromFile();
 
-    products = products.filter((p) => p.id !== id);
+    const updatedProducts = products.filter((p) => p.id !== id);
 
-    await this.writeProductsToFile(products);
+    if (updatedProducts.length === products.length) {
+      throw new Error('Product not found');
+    }
+
+    await this.writeProductsToFile(updatedProducts);
   }
 
   generateId(products) {
@@ -67,8 +71,13 @@ class ProductManager {
       return [];
     }
   }
+
   async writeProductsToFile(products) {
-    await fs.writeFile(this.path, JSON.stringify(products, null, 2), 'utf-8');
+    try {
+      await fs.writeFile(this.path, JSON.stringify(products, null, 2), 'utf-8');
+    } catch (error) {
+      throw new Error('Error writing to file');
+    }
   }
 }
 

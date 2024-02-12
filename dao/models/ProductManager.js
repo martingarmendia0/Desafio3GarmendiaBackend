@@ -8,11 +8,21 @@ class ProductManager {
 
   async addProduct(product) {
     const products = await this.readProductsFromFile();
-    const newProduct = { id: this.generateId(products), ...product };
+    const newProduct = { id: this.generateId(), ...product };
     products.push(newProduct);
     await this.writeProductsToFile(products);
 
     return newProduct;
+  }
+
+  generateId() {
+    // Usar un contador para generar IDs únicos
+    if (!this.idCounter) {
+      this.idCounter = 1;
+    } else {
+      this.idCounter += 1;
+    }
+    return this.idCounter;
   }
 
   async getProducts() {
@@ -71,6 +81,10 @@ class ProductManager {
       return [];
     }
   }
+
+async getAllProducts() {
+  return await this.readProductsFromFile();
+}
 
   async writeProductsToFile(products) {
     try {

@@ -1,5 +1,3 @@
-// public/scripts/socket.js
-
 document.addEventListener('DOMContentLoaded', () => {
   const socket = io();
 
@@ -34,8 +32,22 @@ document.addEventListener('DOMContentLoaded', () => {
     socket.emit('addProduct', { title, description, price, stock });
   });
 
+  socket.on('initialProducts', (initialProducts) => {
+    updateProductList(initialProducts);
+  });
+
   socket.on('productUpdated', (data) => {
     // Actualiza la interfaz de usuario con los productos actualizados
     updateProductList(data.products);
+  });
+
+  // Mostrar alerta al recibir un mensaje
+  socket.on('chatMessage', (message) => {
+    Swal.fire({
+      title: 'Nuevo Mensaje',
+      text: `${message.user}: ${message.message}`,
+      icon: 'info',
+      confirmButtonText: 'OK'
+    });
   });
 });

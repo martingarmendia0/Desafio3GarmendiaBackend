@@ -12,11 +12,11 @@
 
   <ul>
     {{#each products}}
-    <li>
-      <strong>{{this.title}}</strong>
-      <p>{{this.description}}</p>
-      <p>Price: ${{this.price}}</p>
-    </li>
+      <li>
+        <strong>{{this.title}}</strong>
+        <p>{{this.description}}</p>
+        <p>Price: ${{this.price}}</p>
+      </li>
     {{/each}}
   </ul>
 
@@ -40,10 +40,12 @@
       const title = document.getElementsByName('title')[0].value;
       const description = document.getElementsByName('description')[0].value;
       const price = document.getElementsByName('price')[0].value;
+
       socket.emit('addProduct', { title, description, price });
     });
 
     socket.on('productUpdated', (updatedProducts) => {
+      // Aquí puedes actualizar la interfaz de usuario con los productos actualizados
     });
   </script>
 </body>

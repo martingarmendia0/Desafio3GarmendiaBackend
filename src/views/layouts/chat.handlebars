@@ -1,0 +1,89 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Chat</title>
+</head>
+<body>
+  <h1>Chat</h1>
+  
+  <div id="chatMessages">
+    <!-- Aquí se mostrarán los mensajes del chat -->
+  </div>
+
+  <form id="messageForm">
+    <input type="text" id="user" placeholder="Your Name" required>
+    <input type="text" id="message" placeholder="Type your message" required>
+    <button type="submit">Send</button>
+  </form>
+
+  <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/socket.io/4.1.3/socket.io.js"></script>
+  <script src="/scripts/socket.js"></script>
+
+  <script>
+    const chatMessages = document.getElementById('chatMessages');
+    const messageForm = document.getElementById('messageForm');
+    const socket = io();
+
+    // Función para mostrar el cuadro de diálogo de SweetAlert2 para ingresar el nombre de usuario
+    function showUsernameDialog() {
+      Swal.fire({
+        title: 'Enter Your Name',
+        input: 'text',
+        inputLabel: 'Name',
+        inputPlaceholder: 'Enter your name',
+        showCancelButton: false,
+        confirmButtonText: 'Start Chat',
+        allowOutsideClick: false,
+        allowEscapeKey: false,
+        preConfirm: (name) => {
+          // Si se proporciona un nombre, lo devuelve
+          return name;
+        }
+      }).then((result) => {
+        if (result.isConfirmed) {
+          // Si se confirma, se asigna el nombre de usuario y se activa el formulario de mensajes
+          const username = result.value;
+          document.getElementById('user').value = username;
+          messageForm.style.display = 'block';
+        } else {
+          // Si se cancela, se recarga la página para obligar al usuario a ingresar un nombre
+          window.location.reload();
+        }
+      });
+    }
+
+    // Mostrar el cuadro de diálogo de SweetAlert2 al cargar la página para solicitar el nombre de usuario
+    window.onload = () => {
+      showUsernameDialog();
+    };
+
+    function displayMessage(message) {
+      const messageElement = document.createElement('div');
+      messageElement.innerText = `${message.user}: ${message.message}`;
+      chatMessages.appendChild(messageElement);
+    }
+
+    messageForm.addEventListener('submit', (event) => {
+      event.preventDefault();
+      const user = document.getElementById('user').value;
+      const message = document.getElementById('message').value;
+      socket.emit('sendMessage', { user, message });
+      document.getElementById('message').value = ''; // Limpiar el campo de mensaje después de enviarlo
+    });
+
+    socket.on('messageReceived', (message) => {
+      displayMessage(message);
+      // Mostrar alerta al recibir un mensaje
+      Swal.fire({
+        title: 'New Message',
+        text: `${message.user}: ${message.message}`,
+        icon: 'info',
+        confirmButtonText: 'OK'
+      });
+    });
+  </script>
+</body>
+</html>

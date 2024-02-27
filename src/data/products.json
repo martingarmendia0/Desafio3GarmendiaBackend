@@ -1,152 +1,92 @@
 [
-  {
-    "id": 1,
-    "title": "Camiseta Deportiva",
-    "description": "Camiseta cómoda para actividades deportivas.",
-    "price": 20,
-    "thumbnail": "https://example.com/camiseta.jpg",
-    "code": "C001",
-    "stock": 50
-  },
-  {
-    "id": 2,
-    "title": "Portátil Ultraligero",
-    "description": "Portátil potente y ligero para trabajo y entretenimiento.",
-    "price": 800,
-    "thumbnail": "https://example.com/portatil.jpg",
-    "code": "P002",
-    "stock": 20
-  },
-  {
-    "id": 3,
-    "title": "Zapatos De Vestir",
-    "description": "Elegantes zapatos para ocasiones formales.",
-    "price": 50,
-    "thumbnail": "https://example.com/zapatos.jpg",
-    "code": "Z003",
-    "stock": 30
-  },
-  {
-    "id": 4,
-    "title": "Teléfono Inteligente",
-    "description": "Teléfono con pantalla de alta resolución y cámara potente.",
-    "price": 600,
-    "thumbnail": "https://example.com/telefono.jpg",
-    "code": "T004",
-    "stock": 25
-  },
-  {
-    "id": 5,
-    "title": "Pantalón Casual",
-    "description": "Pantalón cómodo y versátil para uso diario.",
-    "price": 30,
-    "thumbnail": "https://example.com/pantalon.jpg",
-    "code": "P005",
-    "stock": 40
-  },
-  {
-    "id": 6,
-    "title": "Reloj Deportivo",
-    "description": "Reloj resistente al agua y con funciones deportivas.",
-    "price": 60,
-    "thumbnail": "https://example.com/reloj.jpg",
-    "code": "R006",
-    "stock": 15
-  },
-  {
-    "id": 7,
-    "title": "Gafas de Sol",
-    "description": "Gafas de sol con protección UV para un estilo elegante.",
-    "price": 25,
-    "thumbnail": "https://example.com/gafas.jpg",
-    "code": "G007",
-    "stock": 35
-  },
-  {
-    "id": 8,
-    "title": "Mochila Resistente",
-    "description": "Mochila espaciosa y resistente para uso diario.",
-    "price": 40,
-    "thumbnail": "https://example.com/mochila.jpg",
-    "code": "M008",
-    "stock": 18
-  },
-  {
-    "id": 9,
-    "title": "Auriculares Inalámbricos",
-    "description": "Auriculares con cancelación de ruido para una experiencia de sonido inmersiva.",
-    "price": 70,
-    "thumbnail": "https://example.com/auriculares.jpg",
-    "code": "A009",
-    "stock": 22
-  },
-  {
-    "id": 10,
-    "title": "Cámara Compacta",
-    "description": "Cámara digital compacta para capturar momentos especiales.",
-    "price": 150,
-    "thumbnail": "https://example.com/camara.jpg",
-    "code": "C010",
-    "stock": 12
-  },
-  {
-    "id": 11,
-    "title": "Camiseta Deportiva",
-    "description": "Camiseta cómoda para actividades deportivas.",
-    "price": "20"
-  },
-  {
-    "id": 12,
-    "title": "Camiseta Deportiva",
-    "description": "Camiseta cómoda para actividades deportivas.",
-    "price": "20"
-  },
-  {
-    "id": 13,
-    "title": "Camiseta Deportiva",
-    "description": "Camiseta cómoda para actividades deportivas.",
-    "price": "20"
-  },
-  {
-    "id": 14,
-    "title": "Camiseta Deportiva",
-    "description": "Camiseta cómoda para actividades deportivas.",
-    "price": "20"
-  },
-  {
-    "id": 15,
-    "title": "1",
-    "description": "1",
-    "price": "1"
-  },
-  {
-    "id": 16,
-    "title": "1",
-    "description": "1",
-    "price": "1"
-  },
-  {
-    "id": 17,
-    "title": "asd",
-    "description": "1",
-    "price": "44"
-  },
-  {
-    "id": 18,
-    "title": "1",
-    "description": "1",
-    "price": "1"
-  },
-  {
-    "id": 19,
-    "title": "1",
-    "description": "1",
-    "price": "1"
-  },
-  {
-    "id": 20,
-    "title": "1",
-    "description": "1",
-    "price": "1"
-  }
-]
+    {
+      "id": 1,
+      "title": "Camiseta Deportiva",
+      "description": "Camiseta cómoda para actividades deportivas.",
+      "price": 20,
+      "thumbnail": "https://example.com/camiseta.jpg",
+      "code": "C001",
+      "stock": 50
+    },
+    {
+      "id": 2,
+      "title": "Portátil Ultraligero",
+      "description": "Portátil potente y ligero para trabajo y entretenimiento.",
+      "price": 800,
+      "thumbnail": "https://example.com/portatil.jpg",
+      "code": "P002",
+      "stock": 20
+    },
+    {
+      "id": 3,
+      "title": "Zapatos De Vestir",
+      "description": "Elegantes zapatos para ocasiones formales.",
+      "price": 50,
+      "thumbnail": "https://example.com/zapatos.jpg",
+      "code": "Z003",
+      "stock": 30
+    },
+    {
+      "id": 4,
+      "title": "Teléfono Inteligente",
+      "description": "Teléfono con pantalla de alta resolución y cámara potente.",
+      "price": 600,
+      "thumbnail": "https://example.com/telefono.jpg",
+      "code": "T004",
+      "stock": 25
+    },
+    {
+      "id": 5,
+      "title": "Pantalón Casual",
+      "description": "Pantalón cómodo y versátil para uso diario.",
+      "price": 30,
+      "thumbnail": "https://example.com/pantalon.jpg",
+      "code": "P005",
+      "stock": 40
+    },
+    {
+      "id": 6,
+      "title": "Reloj Deportivo",
+      "description": "Reloj resistente al agua y con funciones deportivas.",
+      "price": 60,
+      "thumbnail": "https://example.com/reloj.jpg",
+      "code": "R006",
+      "stock": 15
+    },
+    {
+      "id": 7,
+      "title": "Gafas de Sol",
+      "description": "Gafas de sol con protección UV para un estilo elegante.",
+      "price": 25,
+      "thumbnail": "https://example.com/gafas.jpg",
+      "code": "G007",
+      "stock": 35
+    },
+    {
+      "id": 8,
+      "title": "Mochila Resistente",
+      "description": "Mochila espaciosa y resistente para uso diario.",
+      "price": 40,
+      "thumbnail": "https://example.com/mochila.jpg",
+      "code": "M008",
+      "stock": 18
+    },
+    {
+      "id": 9,
+      "title": "Auriculares Inalámbricos",
+      "description": "Auriculares con cancelación de ruido para una experiencia de sonido inmersiva.",
+      "price": 70,
+      "thumbnail": "https://example.com/auriculares.jpg",
+      "code": "A009",
+      "stock": 22
+    },
+    {
+      "id": 10,
+      "title": "Cámara Compacta",
+      "description": "Cámara digital compacta para capturar momentos especiales.",
+      "price": 150,
+      "thumbnail": "https://example.com/camara.jpg",
+      "code": "C010",
+      "stock": 12
+    }
+  ]

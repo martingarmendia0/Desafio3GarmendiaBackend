@@ -1,39 +1,26 @@
-//app.js
 const express = require('express');
 const exphbs = require('express-handlebars').create();
 const http = require('http');
 const socketIO = require('socket.io');
 const path = require('path');
 const fs = require('fs');
-const Swal = require ('sweetalert2');
-const mongoose = require('../dao/db');
-const Message = require('../dao/models/MessageModel');
-const Cart = require('../dao/models/CartModel');
-const Product = require('../dao/models/ProductModels');
+const mongoose = require('./dao/db');
+const Message = require('./dao/models/MessageModel');
+const Cart = require('./dao/models/CartModel');
+const Product = require('./dao/models/ProductModels');
 const messageRoutes = require('./routes/messageRoutes');
+const productRoutes = require('./routes/productRoutes');
+const cartRoutes = require('./routes/cartRoutes');
 const app = express();
 const server = http.createServer(app);
 const io = socketIO(server);
-const ProductManager = require('../dao/models/ProductManager');
+const ProductManager = require('./dao/models/ProductManager');
 const productManager = new ProductManager(path.join(__dirname, 'data', 'products.json'));
 
 // Configuración de Handlebars
 app.engine('handlebars', exphbs.engine);
 app.set('view engine', 'handlebars');
 app.set('views', path.join(__dirname, 'views'));
-
-app.get('/realTimeProducts', async (req, res) => {
-  try {
-    // Lee los productos desde el ProductManager
-    const products = await productManager.getAllProducts();
-
-    // Renderiza la vista y pasa los productos como contexto
-    res.render('realTimeProducts', { products });
-  } catch (error) {
-    console.error('Error obteniendo productos:', error.message);
-    res.status(500).send('Error obteniendo productos');
-  }
-});
 
 // Middleware para servir archivos estáticos (styles, scripts, etc.)
 app.use(express.static(path.join(__dirname, 'public')));
@@ -45,14 +32,14 @@ app.use(express.json());
 // Configuración del puerto
 const PORT = 8080;
 
+// Rutas
+app.use('/messages', messageRoutes);
+app.use('/products', productRoutes);
+app.use('/carts', cartRoutes);
+
 // Inicio del servidor
 server.listen(PORT, () => {
   console.log(`Server is running on port ${PORT}`);
-});
-
-// Ruta para renderizar la vista de chat
-app.get('/chat', (req, res) => {
-  res.render('chat'); // Renderiza la vista de chat
 });
 
 // Manejo de conexiones con Socket.io

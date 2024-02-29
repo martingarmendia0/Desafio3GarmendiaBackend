@@ -37,6 +37,16 @@ app.use('/messages', messageRoutes);
 app.use('/products', productRoutes);
 app.use('/carts', cartRoutes);
 
+// Ruta para el formulario de registro
+app.get('/register', (req, res) => {
+  res.render('register');
+});
+
+// Ruta para el formulario de inicio de sesión
+app.get('/login', (req, res) => {
+  res.render('login');
+});
+
 // Inicio del servidor
 server.listen(PORT, () => {
   console.log(`Server is running on port ${PORT}`);

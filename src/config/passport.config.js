@@ -3,7 +3,9 @@ const passport = require('passport');
 const LocalStrategy = require('passport-local').Strategy;
 const GitHubStrategy = require('passport-github2').Strategy;
 const bcrypt = require('bcrypt');
-const { User } = require('./db');
+const { User } = require('../dao/db');
+const JwtStrategy = require('passport-jwt').Strategy;
+const ExtractJwt = require('passport-jwt').ExtractJwt;
 
 passport.use(new LocalStrategy({
     usernameField: 'email',
@@ -25,9 +27,36 @@ passport.use(new LocalStrategy({
     }
 }));
 
+passport.use('current', new JwtStrategy({
+    jwtFromRequest: ExtractJwt.fromExtractors([
+        ExtractJwt.fromHeader('authorization'),
+        ExtractJwt.fromUrlQueryParameter('token'),
+        ExtractJwt.fromBodyField('token'),
+        ExtractJwt.fromAuthHeaderAsBearerToken(),
+        ExtractJwt.fromAuthHeaderWithScheme('JWT'),
+        ExtractJwt.fromAuthHeaderWithScheme('Token'),
+    ]),
+    secretOrKey: process.env.JWT_SECRET
+}, async (payload, done) => {
+    try {
+        // Buscar el usuario por ID en la base de datos
+        const user = await User.findById(payload.id);
+
+        // Si el usuario no existe, retornar un mensaje de error
+        if (!user) {
+            return done(null, false, { message: 'Usuario no encontrado' });
+        }
+
+        // Si el usuario existe, retornarlo
+        return done(null, user);
+    } catch (error) {
+        return done(error);
+    }
+}));
+
 passport.use(new GitHubStrategy({
-    clientID: GITHUB_CLIENT_ID,
-    clientSecret: GITHUB_CLIENT_SECRET,
+    clientID: process.env.GITHUB_CLIENT_ID,
+    clientSecret: process.env.GITHUB_CLIENT_SECRET,
     callbackURL: "http://localhost:8080/auth/github/callback"
 }, async (accessToken, refreshToken, profile, done) => {
     // Lógica para autenticar con GitHub

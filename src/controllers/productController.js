@@ -3,14 +3,13 @@ const productManager = new ProductManager('./data/products.json');
 
 exports.getProducts = async (req, res) => {
     try {
-        const limit = req.query.limit ? parseInt(req.query.limit) : undefined;
-        const products = await productManager.getProducts();
+        const limit = req.query.limit ? parseInt(req.query.limit) : 10;
+        const page = req.query.page ? parseInt(req.query.page) : 1;
+        const sort = req.query.sort;
+        const query = req.query.query;
 
-        if (limit) {
-            res.json(products.slice(0, limit));
-        } else {
-            res.json(products);
-        }
+        const result = await productManager.getProducts({ limit, page, sort, query });
+        res.json(result);
     } catch (error) {
         res.status(500).json({ error: error.message });
     }
@@ -20,50 +19,11 @@ exports.getProductById = async (req, res) => {
     try {
         const { pid } = req.params;
         const product = await productManager.getProductById(parseInt(pid));
-
+        if (!product) {
+            return res.status(404).json({ error: 'Product not found' });
+        }
         res.json(product);
     } catch (error) {
-        res.status(404).json({ error: error.message });
-    }
-};
-
-exports.addProduct = async (req, res) => {
-    try {
-        const newProduct = await productManager.addProduct(req.body);
-        const io = req.app.get('io');
-        const updatedProducts = await productManager.getProducts(); // Actualiza la lista de productos
-        io.emit('productUpdated', updatedProducts);
-
-        res.json(newProduct);
-    } catch (error) {
-        res.status(400).json({ error: error.message });
-    }
-};
-
-exports.updateProduct = async (req, res) => {
-    try {
-        const { pid } = req.params;
-        const updatedProduct = await productManager.updateProduct(parseInt(pid), req.body);
-        const io = req.app.get('io');
-        const updatedProducts = await productManager.getProducts(); // Actualiza la lista de productos
-        io.emit('productUpdated', updatedProducts);
-
-        res.json(updatedProduct);
-    } catch (error) {
-        res.status(404).json({ error: error.message });
-    }
-};
-
-exports.deleteProduct = async (req, res) => {
-    try {
-        const { pid } = req.params;
-        await productManager.deleteProduct(parseInt(pid));
-        const io = req.app.get('io');
-        const updatedProducts = await productManager.getProducts(); // Actualiza la lista de productos
-        io.emit('productUpdated', updatedProducts);
-
-        res.json({ message: 'Product deleted successfully' });
-    } catch (error) {
-        res.status(404).json({ error: error.message });
+        res.status(500).json({ error: error.message });
     }
 };

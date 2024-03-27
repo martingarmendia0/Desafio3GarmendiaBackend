@@ -1,6 +1,6 @@
 const express = require('express');
 const router = express.Router();
-const cartController = require('../controllers/CartController');
+const cartController = require('../controllers/cartController');
 
 // Ruta para crear un nuevo carrito
 router.post('/', cartController.createCart);

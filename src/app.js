@@ -15,6 +15,7 @@ const session = require('express-session');
 const passport = require('passport');
 const LocalStrategy = require('passport-local').Strategy;
 const jwt = require('jsonwebtoken');
+const DAOFactory = require('./dao/DAOFactory'); // Importar la factory de DAO
 
 const app = express();
 const server = http.createServer(app);

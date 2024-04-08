@@ -1,4 +1,8 @@
 const mongoose = require('mongoose');
+require('dotenv').config(); // Importa el módulo dotenv para cargar variables de entorno
+
+// URI de conexión a MongoDB obtenida desde las variables de entorno
+const MONGODB_URI = process.env.MONGODB_URI;
 
 // Definición del esquema de usuario
 const userSchema = new mongoose.Schema({
@@ -7,14 +11,13 @@ const userSchema = new mongoose.Schema({
   email: { type: String, unique: true },
   age: Number,
   password: String,
-  role: { type: String, default: 'usuario' } // Por defecto, los usuarios tendrán el rol 'usuario'
+  role: { type: String, default: 'usuario' }
 });
 
 // Creación del modelo de usuario
 const User = mongoose.model('User', userSchema);
 
 // Conexión a la base de datos MongoDB
-const MONGODB_URI = 'mongodb+srv://martingarmendia0:i0hq5nh3zcfUhijg@cursocoder.uzqe7xp.mongodb.net/?retryWrites=true&w=majority';
 mongoose.connect(MONGODB_URI, { useNewUrlParser: true, useUnifiedTopology: true })
   .then(() => console.log('Conexión a MongoDB establecida'))
   .catch(err => console.error('Error al conectar a MongoDB:', err));

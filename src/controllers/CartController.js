@@ -1,5 +1,26 @@
 const CartManager = require('../models/CartManager');
 const cartManager = new CartManager('../data/carts.json');
+const TicketService = require('../services/TicketService');
+
+const purchaseCart = async (req, res) => {
+    const cartId = req.params.cid;
+    const purchaserEmail = req.user.email; // Obtén el correo del comprador
+    const purchaseAmount = req.body.amount; // Obtén el monto total de la compra
+
+    try {
+        // Genera el ticket con los datos de la compra
+        const ticket = await TicketService.generateTicket(cartId, purchaserEmail, purchaseAmount);
+
+        // Actualiza el carrito y filtra los productos que no pudieron comprarse
+        // (deja solo los productos que no se compraron)
+        await CartService.updateCartAfterPurchase(cartId);
+
+        res.status(200).json({ message: 'Compra realizada con éxito', ticket });
+    } catch (error) {
+        console.error('Error al finalizar la compra:', error);
+        res.status(500).json({ error: 'Error al finalizar la compra' });
+    }
+};
 
 exports.createCart = async (req, res) => {
     try {
@@ -60,4 +81,8 @@ exports.deleteAllProductsFromCart = async (req, res) => {
     } catch (error) {
         res.status(500).json({ error: error.message });
     }
+};
+
+module.exports = {
+    purchaseCart
 };

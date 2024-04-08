@@ -1,5 +1,6 @@
 const jwt = require('jsonwebtoken');
 const bcrypt = require('bcrypt');
+const User = require('../models/User');
 
 // Función para generar un token JWT con duración de 1 minuto
 const generateToken = (user) => {

@@ -1,5 +1,6 @@
 const CartManager = require('../models/CartManager');
 const cartManager = new CartManager('../data/carts.json');
+const cartService = require('../services/cartService');
 const TicketService = require('../services/TicketService');
 
 const purchaseCart = async (req, res) => {
@@ -13,7 +14,7 @@ const purchaseCart = async (req, res) => {
 
         // Actualiza el carrito y filtra los productos que no pudieron comprarse
         // (deja solo los productos que no se compraron)
-        await CartService.updateCartAfterPurchase(cartId);
+        await cartService.updateCartAfterPurchase(cartId);
 
         res.status(200).json({ message: 'Compra realizada con éxito', ticket });
     } catch (error) {

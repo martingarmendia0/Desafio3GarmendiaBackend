@@ -1,6 +1,7 @@
 const express = require('express');
 const router = express.Router();
 const cartController = require('../controllers/cartController');
+const { authorizeUser } = require('../middlewares/authorizationMiddleware');
 
 // Ruta para crear un nuevo carrito
 router.post('/', cartController.createCart);
@@ -19,5 +20,8 @@ router.put('/:cid/products/:pid', cartController.updateProductQuantityInCart);
 
 // Ruta para eliminar todos los productos de un carrito específico
 router.delete('/:cid', cartController.deleteAllProductsFromCart);
+
+// Ruta para finalizar el proceso de compra del carrito
+router.post('/:cid/purchase', authorizeUser, cartController.purchaseCart);
 
 module.exports = router;

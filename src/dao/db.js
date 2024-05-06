@@ -1,3 +1,4 @@
+// db.js
 const mongoose = require('mongoose');
 require('dotenv').config(); // Importa el módulo dotenv para cargar variables de entorno
 
@@ -6,12 +7,12 @@ const MONGODB_URI = process.env.MONGODB_URI;
 
 // Definición del esquema de usuario
 const userSchema = new mongoose.Schema({
-  first_name: String,
-  last_name: String,
-  email: { type: String, unique: true },
-  age: Number,
-  password: String,
-  role: { type: String, default: 'usuario' }
+    first_name: String,
+    last_name: String,
+    email: { type: String, unique: true },
+    age: Number,
+    password: String,
+    role: { type: String, enum: ['regular', 'premium'], default: 'regular' }
 });
 
 // Creación del modelo de usuario

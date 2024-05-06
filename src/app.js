@@ -15,13 +15,13 @@ const session = require('express-session');
 const passport = require('passport');
 const LocalStrategy = require('passport-local').Strategy;
 const jwt = require('jsonwebtoken');
-const DAOFactory = require('./dao/DAOFactory'); // Importar la factory de DAO
-
+const DAOFactory = require('./dao/DAOFactory'); 
 const app = express();
 const server = http.createServer(app);
 const io = socketIO(server);
 const ProductManager = require('./dao/models/ProductManager');
 const productManager = new ProductManager(path.join(__dirname, 'data', 'products.json'));
+const { developmentLogger, productionLogger, loggerTest } = require('./config/loggerConfig');
 
 // Configuración de Handlebars
 app.engine('handlebars', exphbs.engine);
@@ -62,6 +62,26 @@ passport.serializeUser((user, done) => {
 passport.deserializeUser((id, done) => {
     // Aquí va la lógica para encontrar al usuario por su ID
 });
+
+// Ejemplo de uso del logger en diferentes niveles
+developmentLogger.debug('Este es un mensaje de debug');
+developmentLogger.http('Este es un mensaje de HTTP');
+developmentLogger.info('Este es un mensaje de información');
+developmentLogger.warning('Este es un mensaje de advertencia');
+developmentLogger.error('Este es un mensaje de error');
+developmentLogger.fatal('Este es un mensaje de fatal error');
+
+// Ejemplo de uso del logger en un controlador de ruta
+exports.loggerTest = (req, res) => {
+    try {
+        // Hacer algo
+        developmentLogger.info('Se ha accedido al endpoint /loggerTest');
+        res.status(200).json({ message: 'Logger test successful' });
+    } catch (error) {
+        productionLogger.error('Error en el endpoint /loggerTest:', error);
+        res.status(500).json({ error: 'Internal server error' });
+    }
+};
 
 // Rutas
 app.use('/messages', messageRoutes);
@@ -159,3 +179,8 @@ io.on('connection', async (socket) => {
         console.log('Usuario desconectado');
     });
 });
+
+//endpoint /loggerTest
+app.get('/loggerTest', loggerTest);
+
+module.exports = router;

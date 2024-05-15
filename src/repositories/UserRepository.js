@@ -1,6 +1,6 @@
 // repositories/UserRepository.js
 
-const User = require('../models/User');
+const User = require('../dao/models/UserModel');
 
 class UserRepository {
   async findById(id) {

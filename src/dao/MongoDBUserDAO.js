@@ -1,6 +1,6 @@
 // dao/MongoDBUserDAO.js
 
-const User = require('../models/User');
+const User = require('./models/UserModel');
 
 class MongoDBUserDAO {
     async createUser(userData) {

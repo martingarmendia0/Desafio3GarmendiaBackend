@@ -22,6 +22,23 @@ const io = socketIO(server);
 const ProductManager = require('./dao/models/ProductManager');
 const productManager = new ProductManager(path.join(__dirname, 'data', 'products.json'));
 const { developmentLogger, productionLogger, loggerTest } = require('./config/loggerConfig');
+const swaggerJsDoc = require('swagger-jsdoc');
+const swaggerUiExpress = require ('swagger-ui-express');
+
+// Swagger
+const swaggerOptions = {
+    definition: {
+        openapi:'3.0.1',
+        info: {
+            title:'Documentación',
+            description:'API para clase de Swagger'
+        }
+    },
+    apis:[`${__dirname}/docs/**/*.yaml`]
+}
+
+const specs = swaggerJsDoc(swaggerOptions);
+app.use('/apidocs',swaggerUiExpress.serve, swaggerUiExpress.setup(specs))
 
 // Configuración de Handlebars
 app.engine('handlebars', exphbs.engine);
@@ -74,7 +91,6 @@ developmentLogger.fatal('Este es un mensaje de fatal error');
 // Ejemplo de uso del logger en un controlador de ruta
 exports.loggerTest = (req, res) => {
     try {
-        // Hacer algo
         developmentLogger.info('Se ha accedido al endpoint /loggerTest');
         res.status(200).json({ message: 'Logger test successful' });
     } catch (error) {

@@ -1,5 +1,3 @@
-// middlewares/authorizationMiddleware.js
-
 const authorizeUser = (allowedRoles) => {
     return (req, res, next) => {
         if (req.isAuthenticated()) {

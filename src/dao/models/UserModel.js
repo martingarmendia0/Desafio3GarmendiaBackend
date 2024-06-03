@@ -1,5 +1,3 @@
-// dao/models/UserModel.js
-
 const mongoose = require('mongoose');
 
 const userSchema = new mongoose.Schema({
@@ -8,7 +6,14 @@ const userSchema = new mongoose.Schema({
     email: { type: String, unique: true },
     age: Number,
     password: String,
-    role: { type: String, enum: ['regular', 'premium'], default: 'regular' }
+    role: { type: String, enum: ['regular', 'premium'], default: 'regular' },
+    documents: [
+        {
+            name: String,
+            reference: String
+        }
+    ],
+    last_connection: Date
 });
 
 module.exports = mongoose.model('User', userSchema);

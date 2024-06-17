@@ -1,9 +1,9 @@
 // productController.js
-
 const ProductManager = require('../models/ProductManager');
-const Product = require('../db').Product; // Importar el modelo de Producto
+const Product = require('../db').Product;
 const productManager = new ProductManager('./data/products.json');
 const { authorizeUser } = require('../middlewares/authorizationMiddleware');
+const nodemailer = require('nodemailer');
 
 exports.getProducts = async (req, res) => {
     try {
@@ -80,8 +80,27 @@ exports.deleteProduct = async (req, res) => {
                 return res.status(403).json({ error: 'No tienes permiso para borrar este producto' });
             }
 
-            await product.remove();
+            if (product.ownerRole === 'premium') {
+                const owner = await User.findOne({ email: product.owner });
+                const transporter = nodemailer.createTransport({
+                    service: 'Gmail',
+                    auth: {
+                        user: process.env.EMAIL_USER,
+                        pass: process.env.EMAIL_PASS,
+                    },
+                });
 
+                const mailOptions = {
+                    from: process.env.EMAIL_USER,
+                    to: owner.email,
+                    subject: 'Producto eliminado',
+                    text: `Su producto "${product.title}" ha sido eliminado.`,
+                };
+
+                await transporter.sendMail(mailOptions);
+            }
+
+            await product.remove();
             res.status(200).json({ message: 'Producto eliminado correctamente' });
         });
     } catch (error) {

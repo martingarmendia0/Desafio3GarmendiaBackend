@@ -1,6 +1,8 @@
-const { User } = require('../models/User');  // Asegúrate de que el modelo esté importado correctamente
+// userController.js
+const { User } = require('../dao/models/UserModel');  // Asegúrate de que el modelo esté importado correctamente
 const bcrypt = require('bcrypt');
 const jwt = require('jsonwebtoken');
+const nodemailer = require('nodemailer');
 
 exports.registerUser = async (req, res) => {
     try {
@@ -91,5 +93,49 @@ exports.uploadDocuments = async (req, res) => {
         res.status(200).json({ message: 'Documentos subidos correctamente' });
     } catch (error) {
         res.status(500).json({ error: error.message });
+    }
+};
+
+exports.getAllUsers = async (req, res) => {
+    try {
+        const users = await User.find({}, 'first_name last_name email role');
+        res.status(200).json(users);
+    } catch (error) {
+        res.status(500).json({ error: error.message });
+    }
+};
+
+exports.deleteInactiveUsers = async (req, res) => {
+    try {
+        const thresholdDate = new Date(Date.now() - 30 * 60 * 1000); // 30 minutos de inactividad
+        const inactiveUsers = await User.find({ last_connection: { $lt: thresholdDate } });
+
+        if (inactiveUsers.length === 0) {
+            return res.status(200).json({ message: 'No hay usuarios inactivos para eliminar' });
+        }
+
+        const transporter = nodemailer.createTransport({
+            service: 'Gmail',
+            auth: {
+                user: process.env.EMAIL_USER,
+                pass: process.env.EMAIL_PASS,
+            },
+        });
+
+        for (const user of inactiveUsers) {
+            const mailOptions = {
+                from: process.env.EMAIL_USER,
+                to: user.email,
+                subject: 'Cuenta eliminada por inactividad',
+                text: 'Su cuenta ha sido eliminada debido a la inactividad.',
+            };
+
+            await transporter.sendMail(mailOptions);
+            await user.remove();
+        }
+
+        res.status(200).json({ message: 'Usuarios inactivos eliminados correctamente' });
+    } catch (error) {
+        res.status;{code: '500'}({ error: error.message });
     }
 };

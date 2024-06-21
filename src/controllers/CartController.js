@@ -1,7 +1,7 @@
-const CartManager = require('../models/CartManager');
+//cartController.js
+const CartManager = require('../dao/models/CartManager');
 const cartManager = new CartManager('../data/carts.json');
 const cartService = require('../services/cartService');
-const TicketService = require('../services/TicketService');
 
 const purchaseCart = async (req, res) => {
     const cartId = req.params.cid;
@@ -11,14 +11,19 @@ const purchaseCart = async (req, res) => {
     try {
         // Verifica el stock de los productos en el carrito
         const cart = await cartManager.getCartById(cartId);
+
+        if (!cart || cart.products.length === 0) {
+            return res.status(400).json({ error: 'El carrito está vacío. No se puede generar un ticket.' });
+        }
+
         const productsWithInsufficientStock = await cartService.checkStock(cart.products);
-        
+
         if (productsWithInsufficientStock.length > 0) {
             return res.status(400).json({ error: 'Insufficient stock for some products in the cart', productsWithInsufficientStock });
         }
 
         // Genera el ticket con los datos de la compra
-        const ticket = await TicketService.generateTicket(cartId, purchaserEmail, purchaseAmount);
+        const ticket = await cartService.purchaseCart(cart, purchaserEmail, purchaseAmount);
 
         // Actualiza el carrito y filtra los productos que no pudieron comprarse
         // (deja solo los productos que no se compraron)
@@ -31,7 +36,7 @@ const purchaseCart = async (req, res) => {
     }
 };
 
-exports.createCart = async (req, res) => {
+const createCart = async (req, res) => {
     try {
         const newCart = await cartManager.createCart();
         res.json(newCart);
@@ -40,7 +45,7 @@ exports.createCart = async (req, res) => {
     }
 };
 
-exports.getCartProducts = async (req, res) => {
+const getCartProducts = async (req, res) => {
     try {
         const { cid } = req.params;
         const cart = await cartManager.getCartById(cid);
@@ -50,7 +55,7 @@ exports.getCartProducts = async (req, res) => {
     }
 };
 
-exports.addProductToCart = async (req, res) => {
+const addProductToCart = async (req, res) => {
     try {
         const { cid, pid } = req.params;
         const quantity = req.body.quantity || 1;
@@ -68,7 +73,7 @@ exports.addProductToCart = async (req, res) => {
     }
 };
 
-exports.deleteProductFromCart = async (req, res) => {
+const deleteProductFromCart = async (req, res) => {
     try {
         const { cid, pid } = req.params;
         await cartManager.deleteProductFromCart(cid, pid);
@@ -78,7 +83,7 @@ exports.deleteProductFromCart = async (req, res) => {
     }
 };
 
-exports.updateProductQuantityInCart = async (req, res) => {
+const updateProductQuantityInCart = async (req, res) => {
     try {
         const { cid, pid } = req.params;
         const quantity = req.body.quantity;
@@ -90,7 +95,7 @@ exports.updateProductQuantityInCart = async (req, res) => {
     }
 };
 
-exports.deleteAllProductsFromCart = async (req, res) => {
+const deleteAllProductsFromCart = async (req, res) => {
     try {
         const { cid } = req.params;
         await cartManager.deleteAllProductsFromCart(cid);
@@ -101,5 +106,11 @@ exports.deleteAllProductsFromCart = async (req, res) => {
 };
 
 module.exports = {
-    purchaseCart
+    purchaseCart,
+    createCart,
+    getCartProducts,
+    addProductToCart,
+    deleteProductFromCart,
+    updateProductQuantityInCart,
+    deleteAllProductsFromCart
 };

@@ -1,7 +1,7 @@
 const express = require('express');
 const router = express.Router();
 const cartController = require('../controllers/cartController');
-const { authorizeUser } = require('../middlewares/authorizationMiddleware');
+const { authorizeUser } = require('../controllers/sessionController');
 
 // Ruta para crear un nuevo carrito
 router.post('/', cartController.createCart);

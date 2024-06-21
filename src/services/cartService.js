@@ -23,7 +23,7 @@ exports.checkStock = async (products) => {
 };
 
 // Función para realizar la compra de un carrito
-exports.purchaseCart = async (cart) => {
+exports.purchaseCart = async (cart, purchaserEmail, purchaseAmount) => {
     for (const product of cart.products) {
         const dbProduct = await Product.findById(product.productId);
 
@@ -34,12 +34,15 @@ exports.purchaseCart = async (cart) => {
     }
 
     // Generar ticket después de realizar la compra
-    const ticket = await this.generateTicket(cart);
+    const ticket = await this.generateTicket(cart, purchaserEmail, purchaseAmount);
     return ticket;
 };
 
 // Función para actualizar el carrito después de una compra
-exports.updateCartAfterPurchase = async (cartId, productsPurchased) => {
+exports.updateCartAfterPurchase = async (cartId) => {
+    const cart = await Cart.findById(cartId);
+    const productsPurchased = cart.products.map(product => product.productId);
+
     // Filtrar los productos que no fueron comprados
     const productsNotPurchased = cart.products.filter(product => !productsPurchased.includes(product.productId));
 
@@ -48,12 +51,12 @@ exports.updateCartAfterPurchase = async (cartId, productsPurchased) => {
 };
 
 // Función para generar un ticket de compra
-exports.generateTicket = async (cart) => {
+exports.generateTicket = async (cart, purchaserEmail, purchaseAmount) => {
     const ticketData = {
         code: generateTicketCode(),
         purchase_datetime: new Date(),
-        amount: calculateTotalAmount(cart),
-        purchaser: cart.userEmail
+        amount: purchaseAmount,
+        purchaser: purchaserEmail
     };
 
     return await Ticket.create(ticketData);
@@ -64,15 +67,4 @@ const generateTicketCode = () => {
     return Math.random().toString(36).substr(2, 9);
 };
 
-// Función para calcular el monto total de la compra
-const calculateTotalAmount = (cart) => {
-    let totalAmount = 0;
-
-    for (const product of cart.products) {
-        totalAmount += product.price * product.quantity;
-    }
-
-    return totalAmount;
-};
-
-module.exports = cartService;
+module.exports = exports;

@@ -2,7 +2,7 @@
 
 const express = require('express');
 const router = express.Router();
-const Message = require('/Users/tinchi/Desktop/curso coder/backend/Desafio5Garmendia-master/dao/models/MessageModel');
+const Message = require('../dao/models/MessageModel');
 
 // Ruta para guardar un nuevo mensaje en la base de datos
 router.post('/messages', async (req, res) => {

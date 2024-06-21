@@ -1,8 +1,8 @@
 // productController.js
-const ProductManager = require('../models/ProductManager');
-const Product = require('../db').Product;
+const ProductManager = require('../dao/models/ProductManager');
+const Product = require('../dao/db').Product;
 const productManager = new ProductManager('./data/products.json');
-const { authorizeUser } = require('../middlewares/authorizationMiddleware');
+const { authorizeUser } = require('./sessionController');
 const nodemailer = require('nodemailer');
 
 exports.getProducts = async (req, res) => {

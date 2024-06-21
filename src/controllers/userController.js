@@ -1,5 +1,5 @@
 // userController.js
-const { User } = require('../dao/models/UserModel');  // Asegúrate de que el modelo esté importado correctamente
+const { User } = require('../dao/models/UserModel');
 const bcrypt = require('bcrypt');
 const jwt = require('jsonwebtoken');
 const nodemailer = require('nodemailer');

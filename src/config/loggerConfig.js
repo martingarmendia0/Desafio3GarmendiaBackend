@@ -1,6 +1,3 @@
-
-// loggerConfig.js
-
 const { createLogger, format, transports } = require('winston');
 
 // Definir niveles de prioridad
@@ -16,10 +13,7 @@ const levels = {
 // Crear logger de desarrollo
 const developmentLogger = createLogger({
     levels: levels,
-    format: format.combine(
-        format.colorize(),
-        format.simple()
-    ),
+    format: format.simple(),
     transports: [
         new transports.Console()
     ],
@@ -35,7 +29,7 @@ const productionLogger = createLogger({
     ),
     transports: [
         new transports.File({ filename: 'errors.log', level: 'error' }) // Loguear a partir de nivel 'error' en archivo 'errors.log'
-],
+    ],
     level: 'info' // Loguear a partir de nivel 'info'
 });
 

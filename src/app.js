@@ -1,44 +1,40 @@
 const express = require('express');
-const exphbs = require('express-handlebars').create();
+const exphbs = require('express-handlebars').create({ defaultLayout: 'main' });
 const http = require('http');
 const socketIO = require('socket.io');
 const path = require('path');
-const fs = require('fs');
 const mongoose = require('./dao/db');
-const Message = require('./dao/models/MessageModel');
-const Cart = require('./dao/models/CartModel');
-const Product = require('./dao/models/ProductModels');
-const messageRoutes = require('./routes/messageRoutes');
-const productRoutes = require('./routes/productRoutes');
-const cartRoutes = require('./routes/cartRoutes');
 const session = require('express-session');
 const passport = require('passport');
 const LocalStrategy = require('passport-local').Strategy;
 const jwt = require('jsonwebtoken');
-const DAOFactory = require('./dao/DAOFactory'); 
 const app = express();
 const server = http.createServer(app);
 const io = socketIO(server);
+const { developmentLogger, productionLogger } = require('./config/loggerConfig');
+const swaggerJsDoc = require('swagger-jsdoc');
+const swaggerUiExpress = require('swagger-ui-express');
+
+const messageRoutes = require('./routes/messageRoutes');
+const productRoutes = require('./routes/productRoutes');
+const cartRoutes = require('./routes/cartRoutes');
 const ProductManager = require('./dao/models/ProductManager');
 const productManager = new ProductManager(path.join(__dirname, 'data', 'products.json'));
-const { developmentLogger, productionLogger, loggerTest } = require('./config/loggerConfig');
-const swaggerJsDoc = require('swagger-jsdoc');
-const swaggerUiExpress = require ('swagger-ui-express');
 
 // Swagger
 const swaggerOptions = {
     definition: {
-        openapi:'3.0.1',
+        openapi: '3.0.1',
         info: {
-            title:'Documentación',
-            description:'API para clase de Swagger'
+            title: 'Documentación',
+            description: 'API para clase de Swagger'
         }
     },
-    apis:[`${__dirname}/docs/**/*.yaml`]
-}
+    apis: [`${__dirname}/docs/**/*.yaml`]
+};
 
 const specs = swaggerJsDoc(swaggerOptions);
-app.use('/apidocs',swaggerUiExpress.serve, swaggerUiExpress.setup(specs))
+app.use('/apidocs', swaggerUiExpress.serve, swaggerUiExpress.setup(specs));
 
 // Configuración de Handlebars
 app.engine('handlebars', exphbs.engine);
@@ -71,7 +67,6 @@ passport.use(new LocalStrategy({
     // Aquí va la lógica para autenticar al usuario utilizando Mongoose o cualquier otra forma
 }));
 
-// Serialización y deserialización del usuario para la sesión
 passport.serializeUser((user, done) => {
     done(null, user.id);
 });
@@ -80,63 +75,52 @@ passport.deserializeUser((id, done) => {
     // Aquí va la lógica para encontrar al usuario por su ID
 });
 
-// Ejemplo de uso del logger en diferentes niveles
+// Logger de desarrollo
 developmentLogger.debug('Este es un mensaje de debug');
-developmentLogger.http('Este es un mensaje de HTTP');
-developmentLogger.info('Este es un mensaje de información');
-developmentLogger.warning('Este es un mensaje de advertencia');
-developmentLogger.error('Este es un mensaje de error');
-developmentLogger.fatal('Este es un mensaje de fatal error');
 
-// Ejemplo de uso del logger en un controlador de ruta
-exports.loggerTest = (req, res) => {
-    try {
-        developmentLogger.info('Se ha accedido al endpoint /loggerTest');
-        res.status(200).json({ message: 'Logger test successful' });
-    } catch (error) {
-        productionLogger.error('Error en el endpoint /loggerTest:', error);
-        res.status(500).json({ error: 'Internal server error' });
+// Middleware para verificar si el usuario está autenticado
+function isAuthenticated(req, res, next) {
+    if (req.isAuthenticated()) {
+        return next();
     }
-};
+    res.redirect('/login');
+}
 
 // Rutas
 app.use('/messages', messageRoutes);
 app.use('/products', productRoutes);
 app.use('/carts', cartRoutes);
 
-// Ruta para el formulario de registro
 app.get('/register', (req, res) => {
     res.render('register');
 });
 
-// Ruta para procesar el registro de usuario
-app.post('/register', (req, res) => {
-    // Aquí va la lógica para registrar al usuario en la base de datos
-});
-
-// Ruta para el formulario de inicio de sesión
 app.get('/login', (req, res) => {
     res.render('login');
 });
 
-// Ruta para procesar el inicio de sesión
-app.post('/login', passport.authenticate('local', {
-    successRedirect: '/',
-    failureRedirect: '/login',
-    failureFlash: true
-}));
+app.get('/index', (req, res) => {
+    res.render('index', { title: 'Página Principal' });
+});
 
-// Middleware para verificar si el usuario está autenticado
-const isAuthenticated = (req, res, next) => {
-    if (req.isAuthenticated()) {
-        return next();
-    }
-    res.redirect('/login');
-};
+app.get('/realTimeProducts', (req, res) => {
+    res.render('realTimeProducts', { title: 'Productos en tiempo real' });
+});
 
-// Ruta principal
-app.get('/', isAuthenticated, (req, res) => {
-    // Aquí puedes mostrar la vista principal con los datos del usuario autenticado
+app.get('/chat', isAuthenticated, (req, res) => {
+    res.render('chat', { title: 'Chat' });
+});
+
+app.get('/cart', isAuthenticated, (req, res) => {
+    res.render('cart', { title: 'Carrito' });
+});
+
+app.get('/productDetails', (req, res) => {
+    res.render('productDetails', { title: 'Detalles del producto' });
+});
+
+app.get('/reset-password', (req, res) => {
+    res.render('reset-password', { title: 'Restablecer contraseña' });
 });
 
 // Inicio del servidor
@@ -145,25 +129,19 @@ server.listen(PORT, () => {
     console.log(`Server is running on port ${PORT}`);
 });
 
-// Manejo de conexiones con Socket.io
+// Socket.io
 io.on('connection', async (socket) => {
     console.log('Usuario conectado');
 
-    // Manejar mensajes de chat entrantes
+    // Ejemplos de eventos de Socket.io
     socket.on('chatMessage', async (message) => {
-        try {
-            // Guardar el mensaje en la base de datos
-            const newMessage = new Message({ user: message.user, message: message.message });
-            await newMessage.save();
-
-            // Emitir el mensaje a todos los clientes conectados
-            io.emit('chatMessage', newMessage);
-        } catch (error) {
-            console.error('Error al guardar el mensaje:', error.message);
-        }
+        // Lógica para manejar mensajes de chat
     });
 
-    // Obtener la lista inicial de productos y emitirla al cliente
+    socket.on('disconnect', () => {
+        console.log('Usuario desconectado');
+    });
+
     try {
         const initialProducts = await productManager.getAllProducts();
         socket.emit('initialProducts', initialProducts);
@@ -171,21 +149,11 @@ io.on('connection', async (socket) => {
         console.error('Error obteniendo productos iniciales:', error.message);
     }
 
-    // Manejar la desconexión del usuario
-    socket.on('disconnect', () => {
-        console.log('Usuario desconectado');
-    });
-
-    // Manejar la solicitud para agregar un nuevo producto
     socket.on('addProduct', async (newProduct) => {
         try {
-            // Agregar el nuevo producto utilizando el ProductManager
             const addedProduct = await productManager.addProduct(newProduct);
-
-            // Emitir la lista actualizada de productos al cliente
             io.emit('productUpdated', { products: await productManager.getAllProducts() });
         } catch (error) {
-            // Manejar el error, por ejemplo, emitir un mensaje de error al cliente
             console.error('Error adding product:', error.message);
             socket.emit('addError', error.message);
         }
@@ -196,7 +164,15 @@ io.on('connection', async (socket) => {
     });
 });
 
-//endpoint /loggerTest
-app.get('/loggerTest', loggerTest);
+// Endpoint /loggerTest
+app.get('/loggerTest', (req, res) => {
+    try {
+        developmentLogger.info('Se ha accedido al endpoint /loggerTest');
+        res.status(200).json({ message: 'Logger test successful' });
+    } catch (error) {
+        productionLogger.error('Error en el endpoint /loggerTest:', error);
+        res.status(500).json({ error: 'Internal server error' });
+    }
+});
 
-module.exports = router;
+module.exports = app;

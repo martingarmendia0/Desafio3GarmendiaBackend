@@ -1,9 +1,8 @@
-// userRoutes.js
 const express = require('express');
 const router = express.Router();
 const userController = require('../controllers/userController');
+const sessionsController = require('../controllers/sessionsController');
 const upload = require('../middlewares/multerConfig');
-const { authorizeUser } = require('../middlewares/authorizationMiddleware');
 
 // Ruta para registrar un nuevo usuario
 router.post('/register', userController.registerUser);
@@ -14,10 +13,8 @@ router.patch('/premium/:uid', userController.updateUserToPremium);
 // Ruta para subir documentos
 router.post('/:uid/documents', upload.array('documents'), userController.uploadDocuments);
 
-// Ruta para obtener todos los usuarios
-router.get('/', authorizeUser(['admin']), userController.getAllUsers);
-
-// Ruta para eliminar usuarios inactivos
-router.delete('/', authorizeUser(['admin']), userController.deleteInactiveUsers);
+// Ruta para restablecer contraseña
+router.post('/forgot-password', sessionsController.forgotPassword);
+router.post('/reset-password', sessionsController.resetPassword);
 
 module.exports = router;

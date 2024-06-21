@@ -14,10 +14,9 @@ const io = socketIO(server);
 const { developmentLogger, productionLogger } = require('./config/loggerConfig');
 const swaggerJsDoc = require('swagger-jsdoc');
 const swaggerUiExpress = require('swagger-ui-express');
-
 const messageRoutes = require('./routes/messageRoutes');
 const productRoutes = require('./routes/productRoutes');
-const cartRoutes = require('./routes/cartRoutes');
+const cartRoutes = require('./routes/cartRoutes'); // Asegúrate de que cartRoutes esté en la ubicación correcta
 const ProductManager = require('./dao/models/ProductManager');
 const productManager = new ProductManager(path.join(__dirname, 'data', 'products.json'));
 
@@ -89,7 +88,7 @@ function isAuthenticated(req, res, next) {
 // Rutas
 app.use('/messages', messageRoutes);
 app.use('/products', productRoutes);
-app.use('/carts', cartRoutes);
+app.use('/carts', cartRoutes); // Usa el objeto cartRoutes correctamente
 
 app.get('/register', (req, res) => {
     res.render('register');
@@ -124,7 +123,7 @@ app.get('/reset-password', (req, res) => {
 });
 
 // Inicio del servidor
-const PORT = 8080;
+const PORT = process.env.PORT || 8080; // Añadido soporte para puerto dinámico
 server.listen(PORT, () => {
     console.log(`Server is running on port ${PORT}`);
 });
@@ -157,10 +156,6 @@ io.on('connection', async (socket) => {
             console.error('Error adding product:', error.message);
             socket.emit('addError', error.message);
         }
-    });
-
-    socket.on('disconnect', () => {
-        console.log('Usuario desconectado');
     });
 });
 

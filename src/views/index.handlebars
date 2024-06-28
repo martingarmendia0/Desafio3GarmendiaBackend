@@ -2,13 +2,53 @@
 <html lang="en">
 
 <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Index</title>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Index</title>
 </head>
 
 <body>
-  <h1>index</h1>
+    <h1>Página Principal</h1>
+
+    <div id="realTimeProducts">
+        <h2>Productos en Tiempo Real</h2>
+        <ul>
+            {{#each products}}
+            <li>{{this.title}} - ${{this.price}}
+                <a href="/productDetails/{{this.id}}">Detalles</a>
+            </li>
+            {{/each}}
+        </ul>
+    </div>
+
+    <div>
+        <a href="/login">Iniciar sesión</a>
+        <a href="/register">Registrarse</a>
+        <a href="/cart">Carrito</a>
+    </div>
+
+    <script src="/scripts/socket.io.js"></script>
+    <script>
+        var socket = io();
+
+        socket.on('initialProducts', function (products) {
+            updateProducts(products);
+        });
+
+        socket.on('productUpdated', function (data) {
+            updateProducts(data.products);
+        });
+
+        function updateProducts(products) {
+            var productsList = document.getElementById('realTimeProducts').querySelector('ul');
+            productsList.innerHTML = '';
+            products.forEach(function (product) {
+                var li = document.createElement('li');
+                li.innerHTML = `${product.title} - $${product.price} <a href="/productDetails/${product.id}">Detalles</a>`;
+                productsList.appendChild(li);
+            });
+        }
+    </script>
 </body>
 
 </html>

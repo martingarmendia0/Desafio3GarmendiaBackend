@@ -1,19 +1,35 @@
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Detalles del Producto</title>
 </head>
+
 <body>
     <h1>Detalles del Producto</h1>
-    <h2>{{product.name}}</h2>
-    <p>Precio: {{product.price}}</p>
+    <h2>{{product.title}}</h2>
+    <p>Precio: ${{product.price}}</p>
     <p>Descripción: {{product.description}}</p>
     <p>Categoría: {{product.category}}</p>
-    <!-- Agregar botón para agregar al carrito -->
-    <form action="/carts/{{cartId}}/products/{{product._id}}" method="POST">
+
+    <form action="/cart/{{product.id}}" method="POST">
         <button type="submit">Agregar al Carrito</button>
     </form>
+
+    <script src="/scripts/socket.io.js"></script>
+    <script>
+        var socket = io();
+
+        socket.on('connect', () => {
+            console.log('Socket connected');
+        });
+
+        socket.on('disconnect', () => {
+            console.log('Socket disconnected');
+        });
+    </script>
 </body>
+
 </html>
